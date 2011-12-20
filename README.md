@@ -1,0 +1,1 @@
+This is a Java interpretation of managed collections to help with the reuse of managed objects.

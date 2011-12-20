@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<project name="signals" default="compile" basedir=".">
+
+	<property name="java-managed-collections.version" value="0.1-SNAPSHOT" />
+	<property name="java-managed-collections.classpath" value="org.osjava.collections.managed" />
+	<property name="java-managed-collections.jar.bin" value="java-managed-collections-${java-managed-collections.version}.jar" />
+	<property name="java-managed-collections.jar.src" value="java-managed-collections-${java-managed-collections.version}-src.jar" />
+	<property name="java-managed-collections.jar.test" value="java-managed-collections-${java-managed-collections.version}-tests.jar" />
+
+	<property name="junit.version" value="4.9" />
+	<property name="junit.dist" value="junit-${junit.version}" />
+
+	<property name="dir.target" location="target" />
+	<property name="dir.src" value="src/main/java" />
+	<property name="dir.test" value="src/test/java" />
+	<property name="dir.test.reports" value="${dir.target}/reports" />
+	<property name="dir.lib" location="lib" />
+	<property name="dir.dist" location="${dir.target}/bin" />
+	<property name="dir.build" location="${dir.target}/main" />
+	<property name="dir.javadoc" location="${dir.target}/javadoc" />
+
+	<path id="classpath.main" />
+	<path id="classpath.test">
+		<pathelement location="${dir.lib}/junit/${junit.dist}.jar" />
+		<pathelement location="${dir.dist}/${java-managed-collections.jar.test}" />
+		<path refid="classpath.main" />
+	</path>
+
+	<target name="init">
+		<tstamp />
+	</target>
+
+	<target name="clean">
+		<delete dir="${dir.target}" includeemptydirs="true" />
+	</target>
+
+	<macrodef name="java-managed-collections-compilation">
+		<attribute name="src" />
+		<attribute name="dest" />
+		<attribute name="classpath" />
+		<sequential>
+			<mkdir dir="@{dest}" />
+			<javac srcdir="@{src}" destdir="@{dest}" debug="on" includeantruntime="false" target="1.5">
+				<classpath refid="@{classpath}" />
+				<compilerarg value="-Xlint:unchecked" />
+			</javac>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="java-managed-collections-tests">
+		<sequential>
+			<junit printsummary="yes" haltonfailure="no" failureproperty="junit.failure">
+				<classpath refid="classpath.test" />
+
+				<formatter type="brief" />
+
+				<batchtest fork="yes" todir="${dir.test.reports}">
+					<fileset dir="${dir.test}">
+						<include name="**/*Test*.java" />
+					</fileset>
+				</batchtest>
+			</junit>
+			<fail if="junit.failure" message="Unit test(s) failed. See reports!" />
+		</sequential>
+	</macrodef>
+
+	<target name="compile" depends="init">
+		<java-managed-collections-compilation src="${dir.src}" dest="${dir.build}" classpath="classpath.main" />
+		<jar jarfile="${dir.dist}/${java-managed-collections.jar.bin}" basedir="${dir.build}" excludes="" />
+		<jar jarfile="${dir.dist}/${java-managed-collections.jar.src}" basedir="${dir.src}" excludes="**/*.class" />
+	</target>
+
+	<target name="tests" depends="clean, compile">
+		<java-managed-collections-compilation src="${dir.src}; ${dir.test}" dest="${dir.build}" classpath="classpath.test" />
+		<jar jarfile="${dir.dist}/${java-managed-collections.jar.test}" basedir="${dir.build}" excludes="" />
+		<mkdir dir="${dir.test.reports}" />
+		<java-managed-collections-tests />
+	</target>
+
+	<target name="docs">
+		<javadoc destdir="${dir.javadoc}" author="false" version="false" use="false" windowtitle="Java Managed Collections API">
+			<sourcepath location="${dir.src}" />
+			<link href="http://java.sun.com/javase/6/docs/api/" />
+		</javadoc>
+	</target>
+</project>
