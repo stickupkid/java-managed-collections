@@ -2,10 +2,10 @@ package org.osjava.collections.managed;
 
 import java.util.List;
 
-public abstract class ManagedCollectionImpl<E extends ManagedObject<?>> implements
+public abstract class AbstractManagedCollection<E extends ManagedObject<?>> implements
 		ManagedCollection<E> {
 
-	public ManagedCollectionImpl() {
+	public AbstractManagedCollection() {
 		// TODO Auto-generated constructor stub
 	}
 
