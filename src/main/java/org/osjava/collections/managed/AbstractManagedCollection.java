@@ -9,6 +9,15 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		// TODO Auto-generated constructor stub
 	}
 
+	public E retrieve() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void release(E value) {
+		// TODO Auto-generated method stub
+	}
+
 	@Override
 	public ManagedCollection<E> removeAll() {
 		// TODO Auto-generated method stub

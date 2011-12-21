@@ -4,6 +4,10 @@ import java.util.List;
 
 public interface ManagedCollection<E extends ManagedObject<?>> {
 
+	public E retrieve();
+
+	public void release(E value);
+
 	public ManagedCollection<E> removeAll();
 
 	public Boolean equals(ManagedCollection<E> value);
