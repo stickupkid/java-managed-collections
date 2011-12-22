@@ -1,8 +1,8 @@
 package org.osjava.collections.managed;
 
-public interface ManagedPool<T, F> {
+public interface ManagedPool<T, F extends ManagedFactory<T>, P> {
 
-	public T retain();
+	public T retain(P parameter);
 
 	public void release(T value);
 

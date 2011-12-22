@@ -5,6 +5,10 @@ import java.util.List;
 public abstract class AbstractManagedCollection<E extends ManagedObject<?>> implements
 		ManagedCollection<E> {
 
+	protected ManagedPool<ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>, E> bindingPool;
+
+	protected ManagedPool<E, ManagedFactory<E>, ?> managedObjectPool;
+
 	public AbstractManagedCollection() {
 		// TODO Auto-generated constructor stub
 	}
@@ -48,4 +52,11 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		return null;
 	}
 
+	protected void mark(ManagedBinding<E> binding) {
+
+	}
+
+	protected void unmark(ManagedBinding<E> binding) {
+
+	}
 }

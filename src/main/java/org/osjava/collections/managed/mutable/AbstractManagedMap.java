@@ -1,6 +1,12 @@
-package org.osjava.collections.managed;
+package org.osjava.collections.managed.mutable;
 
 import java.util.Map;
+
+import org.osjava.collections.managed.AbstractManagedCollection;
+import org.osjava.collections.managed.ManagedBinding;
+import org.osjava.collections.managed.ManagedList;
+import org.osjava.collections.managed.ManagedMap;
+import org.osjava.collections.managed.ManagedObject;
 
 public abstract class AbstractManagedMap<K, E extends ManagedObject<?>> extends
 		AbstractManagedCollection<E> implements ManagedMap<K, E> {

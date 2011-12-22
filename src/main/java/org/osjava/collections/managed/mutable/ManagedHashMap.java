@@ -2,7 +2,6 @@ package org.osjava.collections.managed.mutable;
 
 import java.util.HashMap;
 
-import org.osjava.collections.managed.AbstractManagedMap;
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedObject;
 

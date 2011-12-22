@@ -2,7 +2,6 @@ package org.osjava.collections.managed.mutable;
 
 import java.util.ArrayList;
 
-import org.osjava.collections.managed.AbstractManagedList;
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedObject;
 

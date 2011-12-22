@@ -6,7 +6,5 @@ public interface ManagedBinding<T extends ManagedObject<?>> {
 
 	public ManagedCollection<T> collection();
 
-	public ManagedObject<?> getManagedObject();
-
-	public void setManagedObject(ManagedObject<?> value);
+	public T getManagedObject();
 }
