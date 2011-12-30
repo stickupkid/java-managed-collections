@@ -2,15 +2,24 @@ package org.osjava.collections.managed;
 
 import java.util.List;
 
+import org.osjava.collections.managed.generic.GenericManagedBindingFactory;
+import org.osjava.collections.managed.generic.GenericManagedObjectFactory;
+import org.osjava.collections.managed.generic.GenericManagedPool;
+
 public abstract class AbstractManagedCollection<E extends ManagedObject<?>> implements
 		ManagedCollection<E> {
 
-	protected ManagedPool<ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>, E> bindingPool;
+	protected ManagedPool<E, E, ManagedFactory<E>> managedObjectPool;
 
-	protected ManagedPool<E, ManagedFactory<E>, ?> managedObjectPool;
+	protected ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool;
 
 	public AbstractManagedCollection() {
-		// TODO Auto-generated constructor stub
+		final ManagedFactory<ManagedBinding<E>> bindingFactory =
+				GenericManagedBindingFactory.newInstance();
+		bindingPool = GenericManagedPool.newInstance(this, bindingFactory);
+
+		final ManagedFactory<E> objectFactory = GenericManagedObjectFactory.newInstance();
+		managedObjectPool = GenericManagedPool.newInstance(this, objectFactory);
 	}
 
 	public E retrieve() {

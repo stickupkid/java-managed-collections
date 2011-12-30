@@ -1,19 +1,16 @@
 package org.osjava.collections.managed;
 
-public interface ManagedPool<T, F extends ManagedFactory<T>, P> {
+public interface ManagedPool<T, E, F extends ManagedFactory<E>> {
 
-	public T retain(P parameter);
+	public E retain();
 
-	public void release(T value);
+	public void release(E value);
 
 	public F getFactory();
-
-	public ManagedCollection<ManagedObject<?>> collection();
 
 	public int size();
 
 	public int available();
 
 	public int priority();
-
 }

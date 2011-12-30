@@ -35,7 +35,7 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	@Override
 	public ManagedList<E> addAt(E value, int index) {
 		if (!contains(value)) {
-			final ManagedBinding<E> binding = bindingPool.retain(value);
+			final ManagedBinding<E> binding = bindingPool.retain();
 
 			_list.add(index, binding);
 			unmark(binding);
