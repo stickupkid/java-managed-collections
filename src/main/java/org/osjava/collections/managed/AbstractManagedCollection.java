@@ -21,8 +21,8 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 	protected final ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool;
 
 	public AbstractManagedCollection(ManagedFactory<E> factory) {
-		bindingPool = GenericManagedPool.newInstance(this, managedObjectGC, bindingFactory);
-		managedObjectPool = GenericManagedPool.newInstance(this, managedBindingGC, factory);
+		bindingPool = GenericManagedPool.newInstance(this, managedBindingGC, bindingFactory);
+		managedObjectPool = GenericManagedPool.newInstance(this, managedObjectGC, factory);
 	}
 
 	public E retrieve() {
