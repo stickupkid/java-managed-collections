@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
+import org.osjava.collections.managed.ManagedCollection;
 import org.osjava.collections.managed.ManagedFactory;
 import org.osjava.collections.managed.ManagedIterator;
 import org.osjava.collections.managed.ManagedList;
@@ -99,6 +100,36 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public ManagedCollection<E> removeAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean equals(ManagedCollection<E> value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ManagedIterator<E> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<E> toList() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

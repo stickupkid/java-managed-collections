@@ -1,10 +1,13 @@
 package org.osjava.collections.managed.mutable;
 
+import java.util.List;
 import java.util.Map;
 
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
+import org.osjava.collections.managed.ManagedCollection;
 import org.osjava.collections.managed.ManagedFactory;
+import org.osjava.collections.managed.ManagedIterator;
 import org.osjava.collections.managed.ManagedList;
 import org.osjava.collections.managed.ManagedMap;
 import org.osjava.collections.managed.ManagedObject;
@@ -52,6 +55,36 @@ public abstract class AbstractManagedMap<K, E extends ManagedObject<?>> extends
 
 	@Override
 	public ManagedList<E> asList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ManagedCollection<E> removeAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean equals(ManagedCollection<E> value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ManagedIterator<E> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<E> toList() {
 		// TODO Auto-generated method stub
 		return null;
 	}

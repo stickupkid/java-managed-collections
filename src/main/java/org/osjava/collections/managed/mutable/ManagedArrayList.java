@@ -16,5 +16,4 @@ public class ManagedArrayList<E extends ManagedObject<?>> extends AbstractManage
 			ManagedFactory<E> factory) {
 		return new ManagedArrayList<E>(factory);
 	}
-
 }
