@@ -3,23 +3,26 @@ package org.osjava.collections.managed;
 import java.util.List;
 
 import org.osjava.collections.managed.generic.GenericManagedBindingFactory;
-import org.osjava.collections.managed.generic.GenericManagedObjectFactory;
+import org.osjava.collections.managed.generic.GenericManagedGC;
 import org.osjava.collections.managed.generic.GenericManagedPool;
 
 public abstract class AbstractManagedCollection<E extends ManagedObject<?>> implements
 		ManagedCollection<E> {
 
-	protected ManagedPool<E, E, ManagedFactory<E>> managedObjectPool;
+	private final ManagedFactory<ManagedBinding<E>> bindingFactory = GenericManagedBindingFactory
+			.newInstance();
 
-	protected ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool;
+	protected final ManagedGC<E> managedObjectGC = GenericManagedGC.newInstance();
 
-	public AbstractManagedCollection() {
-		final ManagedFactory<ManagedBinding<E>> bindingFactory =
-				GenericManagedBindingFactory.newInstance();
-		bindingPool = GenericManagedPool.newInstance(this, bindingFactory);
+	protected final ManagedGC<ManagedBinding<E>> managedBindingGC = GenericManagedGC.newInstance();
 
-		final ManagedFactory<E> objectFactory = GenericManagedObjectFactory.newInstance();
-		managedObjectPool = GenericManagedPool.newInstance(this, objectFactory);
+	protected final ManagedPool<E, E, ManagedFactory<E>> managedObjectPool;
+
+	protected final ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool;
+
+	public AbstractManagedCollection(ManagedFactory<E> factory) {
+		bindingPool = GenericManagedPool.newInstance(this, managedObjectGC, bindingFactory);
+		managedObjectPool = GenericManagedPool.newInstance(this, managedBindingGC, factory);
 	}
 
 	public E retrieve() {

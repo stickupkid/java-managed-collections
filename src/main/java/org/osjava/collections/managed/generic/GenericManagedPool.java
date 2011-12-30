@@ -3,14 +3,16 @@ package org.osjava.collections.managed.generic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.osjava.collections.managed.AbstractManagedPool;
 import org.osjava.collections.managed.ManagedCollection;
 import org.osjava.collections.managed.ManagedFactory;
+import org.osjava.collections.managed.ManagedGC;
 import org.osjava.collections.managed.ManagedObject;
 import org.osjava.collections.managed.ManagedPool;
 import org.osjava.collections.managed.ManagedPoolItem;
 
-public class GenericManagedPool<T extends ManagedObject<?>, E, F extends ManagedFactory<E>>
-		implements ManagedPool<T, E, F> {
+public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends ManagedFactory<E>>
+		extends AbstractManagedPool<T, E, F> implements ManagedPool<T, E, F> {
 
 	private static final int ALLOCATIONS = 512;
 
@@ -20,11 +22,11 @@ public class GenericManagedPool<T extends ManagedObject<?>, E, F extends Managed
 
 	private final List<E> _utilised = new ArrayList<E>();
 
-	private F _factory;
+	private final F _factory;
 
-	private int _priority;
+	private GenericManagedPool(ManagedCollection<T> collection, ManagedGC<E> gc, F factory) {
+		super(gc);
 
-	private GenericManagedPool(ManagedCollection<T> collection, F factory) {
 		if (null == collection)
 			throw new IllegalArgumentException("ManagedCollection can not be null");
 		if (null == factory)
@@ -32,25 +34,26 @@ public class GenericManagedPool<T extends ManagedObject<?>, E, F extends Managed
 
 		_factory = factory;
 		_collection = collection;
-
-		_priority = 100;
-
-		allocate();
 	}
 
 	public static <T extends ManagedObject<?>, E, F extends ManagedFactory<E>>
-			GenericManagedPool<T, E, F> newInstance(ManagedCollection<T> collection, F factory) {
-		return new GenericManagedPool<T, E, F>(collection, factory);
+			GenericManagedPool<T, E, F> newInstance(ManagedCollection<T> collection,
+					ManagedGC<E> gc, F factory) {
+		return new GenericManagedPool<T, E, F>(collection, gc, factory);
 	}
 
 	@Override
 	public E retain() {
-		if (available() < 1)
+		if (getAvailable() < 1)
 			allocate();
 
 		final E item = _available.remove(_available.size() - 1);
 
 		_utilised.add(item);
+
+		priority++;
+		if (priority >= 100)
+			priority = 100;
 
 		return item;
 	}
@@ -78,25 +81,21 @@ public class GenericManagedPool<T extends ManagedObject<?>, E, F extends Managed
 	}
 
 	@Override
-	public int size() {
+	public int getSize() {
 		return _available.size() + _utilised.size();
 	}
 
 	@Override
-	public int available() {
+	public int getAvailable() {
 		return _available.size();
 	}
 
 	@Override
-	public int priority() {
-		return _priority;
-	}
-
-	private void allocate() {
+	protected void allocate() {
 		int index = ALLOCATIONS;
 		while (--index > -1) {
 			_available.add(getFactory().create());
 		}
-		_priority = 100;
+		super.allocate();
 	}
 }

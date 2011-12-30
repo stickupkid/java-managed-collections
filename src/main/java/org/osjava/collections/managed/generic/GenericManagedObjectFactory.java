@@ -2,7 +2,7 @@ package org.osjava.collections.managed.generic;
 
 import org.osjava.collections.managed.ManagedFactory;
 
-public class GenericManagedObjectFactory<T> implements ManagedFactory<T> {
+public final class GenericManagedObjectFactory<T> implements ManagedFactory<T> {
 
 	public GenericManagedObjectFactory() {
 
