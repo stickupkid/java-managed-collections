@@ -5,4 +5,8 @@ public interface ManagedBinding<T extends ManagedObject<?>> extends ManagedPoolI
 	public Boolean isEmpty();
 
 	public T getManagedObject();
+
+	public void setManagedObject(T value);
+
+	public void setCollection(ManagedCollection<ManagedObject<?>> collection);
 }

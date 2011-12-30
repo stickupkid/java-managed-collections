@@ -62,7 +62,7 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 	public void release(E value) {
 		if (value instanceof ManagedPoolItem) {
 			final ManagedPoolItem poolItem = (ManagedPoolItem) value;
-			if (poolItem.collection().equals(_collection)) {
+			if (poolItem.getCollection().equals(_collection)) {
 				final int index = _utilised.indexOf(value);
 				if (index >= 0) {
 					final E item = _utilised.remove(index);
