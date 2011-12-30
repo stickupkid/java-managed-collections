@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
+import org.osjava.collections.managed.ManagedFactory;
 import org.osjava.collections.managed.ManagedIterator;
 import org.osjava.collections.managed.ManagedList;
 import org.osjava.collections.managed.ManagedObject;
@@ -13,7 +14,9 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 
 	private final List<ManagedBinding<E>> _list;
 
-	public AbstractManagedList(List<ManagedBinding<E>> list) {
+	public AbstractManagedList(ManagedFactory<E> factory, List<ManagedBinding<E>> list) {
+		super(factory);
+
 		_list = list;
 	}
 

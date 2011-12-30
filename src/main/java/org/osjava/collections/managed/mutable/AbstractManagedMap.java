@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
+import org.osjava.collections.managed.ManagedFactory;
 import org.osjava.collections.managed.ManagedList;
 import org.osjava.collections.managed.ManagedMap;
 import org.osjava.collections.managed.ManagedObject;
@@ -13,7 +14,9 @@ public abstract class AbstractManagedMap<K, E extends ManagedObject<?>> extends
 
 	private final Map<K, ManagedBinding<E>> _map;
 
-	public AbstractManagedMap(Map<K, ManagedBinding<E>> map) {
+	public AbstractManagedMap(ManagedFactory<E> factory, Map<K, ManagedBinding<E>> map) {
+		super(factory);
+
 		_map = map;
 	}
 
