@@ -1,7 +1,6 @@
 package org.osjava.collections.managed.generic;
 
 import org.osjava.collections.managed.AbstractManagedGC;
-import org.osjava.collections.managed.ManagedGCObserver;
 
 public final class GenericManagedGC<T> extends AbstractManagedGC<T> {
 
@@ -14,13 +13,13 @@ public final class GenericManagedGC<T> extends AbstractManagedGC<T> {
 	}
 
 	@Override
-	public void sweep() {
-		for (ManagedGCObserver<T> observer : listeners) {
-			observer.onStartSweep(this);
-		}
+	protected void onSweep() {
+		long time = System.nanoTime();
+		for (int i = marked.size() - 1; i >= 0; i--) {
+			removeListener.onRemove(marked.remove(i));
 
-		for (ManagedGCObserver<T> observer : listeners) {
-			observer.onFinishSweep(this);
+			if (System.nanoTime() - time > SWEEP_TIMEOUT)
+				break;
 		}
 	}
 }

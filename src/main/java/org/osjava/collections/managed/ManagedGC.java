@@ -8,6 +8,8 @@ public interface ManagedGC<T> {
 
 	public Boolean hasObserver(ManagedGCObserver<T> observer);
 
+	public void onRemoveListener(ManagedGCRemoveListener<T> listener);
+
 	public void mark(T value);
 
 	public void unmark(T value);

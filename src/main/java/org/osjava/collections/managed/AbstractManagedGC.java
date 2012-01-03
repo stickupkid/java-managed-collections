@@ -6,10 +6,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractManagedGC<T> implements ManagedGC<T> {
 
-	private final List<T> _marked = new ArrayList<T>();
+	protected static final long SWEEP_TIMEOUT = 500000000;
+
+	protected final List<T> marked = new ArrayList<T>();
 
 	protected final List<ManagedGCObserver<T>> listeners =
 			new CopyOnWriteArrayList<ManagedGCObserver<T>>();
+
+	protected ManagedGCRemoveListener<T> removeListener;
 
 	public AbstractManagedGC() {
 
@@ -35,20 +39,42 @@ public abstract class AbstractManagedGC<T> implements ManagedGC<T> {
 	}
 
 	@Override
+	public void onRemoveListener(ManagedGCRemoveListener<T> listener) {
+		removeListener = listener;
+	}
+
+	@Override
 	public ManagedIterator<T> iterator() {
 		// TODO : Pool this iterator.
-		return AbstractManagedGCIterator.newInstance(new ArrayList<T>(_marked));
+		return AbstractManagedGCIterator.newInstance(new ArrayList<T>(marked));
 	}
 
 	@Override
 	public void mark(T value) {
-		if (_marked.indexOf(value) < 0) {
-			_marked.add(value);
+		if (marked.indexOf(value) < 0) {
+			marked.add(value);
 		}
 	}
 
 	@Override
 	public void unmark(T value) {
-		_marked.remove(value);
+		marked.remove(value);
+	}
+
+	@Override
+	public void sweep() {
+		for (ManagedGCObserver<T> observer : listeners) {
+			observer.onStartSweep(this);
+		}
+
+		onSweep();
+
+		for (ManagedGCObserver<T> observer : listeners) {
+			observer.onFinishSweep(this);
+		}
+	}
+
+	protected void onSweep() {
+		throw new AbstractMethodError();
 	}
 }

@@ -52,12 +52,10 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	@Override
 	public Boolean contains(E value) {
 		Boolean result = false;
-		synchronized (_list) {
-			for (final ManagedBinding<E> binding : _list) {
-				if (binding.getManagedObject().equals(value)) {
-					result = true;
-					break;
-				}
+		for (final ManagedBinding<E> binding : _list) {
+			if (binding.getManagedObject().equals(value)) {
+				result = true;
+				break;
 			}
 		}
 		return result;
@@ -65,13 +63,11 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 
 	@Override
 	public ManagedList<E> remove(E value) {
-		synchronized (_list) {
-			for (final ManagedBinding<E> binding : _list) {
-				if (binding.getManagedObject().equals(value)) {
-					_list.remove(binding);
-					mark(binding);
-					break;
-				}
+		for (final ManagedBinding<E> binding : _list) {
+			if (binding.getManagedObject().equals(value)) {
+				_list.remove(binding);
+				mark(binding);
+				break;
 			}
 		}
 		return this;

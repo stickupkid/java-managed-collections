@@ -19,6 +19,9 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 	protected final ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool;
 
 	public AbstractManagedCollection(ManagedFactory<E> factory) {
+		managedObjectGC.onRemoveListener(new ManagedObjectRemoveListener<E>());
+		managedBindingGC.onRemoveListener(new ManagedBindingRemoveListener<ManagedBinding<E>>());
+
 		bindingPool = GenericManagedPool.newInstance(this, managedBindingGC, bindingFactory);
 		managedObjectPool = GenericManagedPool.newInstance(this, managedObjectGC, factory);
 	}
@@ -57,5 +60,26 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		}
 
 		return hash;
+	}
+
+	private class ManagedObjectRemoveListener<T extends E> implements ManagedGCRemoveListener<T> {
+
+		@Override
+		public void onRemove(T item) {
+			managedObjectPool.release(item);
+		}
+	}
+
+	private class ManagedBindingRemoveListener<T extends ManagedBinding<E>> implements
+			ManagedGCRemoveListener<T> {
+
+		@Override
+		public void onRemove(T item) {
+			if (!item.isEmpty()) {
+				managedObjectGC.mark(item.getManagedObject());
+			}
+
+			bindingPool.release(item);
+		}
 	}
 }
