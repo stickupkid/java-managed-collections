@@ -41,6 +41,7 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	public ManagedList<E> addAt(E value, int index) {
 		if (!contains(value)) {
 			final ManagedBinding<E> binding = bindingPool.retain();
+			binding.setManagedObject(value);
 
 			_list.add(index, binding);
 			unmark(binding);
@@ -79,12 +80,8 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 			throw new IndexOutOfBoundsException();
 		}
 
-		E result = null;
 		final ManagedBinding<E> binding = _list.get(index);
-		if (!binding.isEmpty())
-			result = binding.getManagedObject();
-
-		return result;
+		return binding.getManagedObject();
 	}
 
 	@Override
