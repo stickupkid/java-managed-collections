@@ -1,5 +1,8 @@
 package org.osjava.collections.managed;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.osjava.collections.managed.generic.GenericManagedBindingFactory;
 import org.osjava.collections.managed.generic.GenericManagedGC;
 import org.osjava.collections.managed.generic.GenericManagedPool;
@@ -28,6 +31,36 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 
 	public E retrieve() {
 		return managedObjectPool.retain();
+	}
+
+	public <T> E retrieve(T value) throws IllegalArgumentException {
+		E managedObject = retrieve();
+
+		final Method[] methods = managedObject.getClass().getMethods();
+		for (final Method method : methods) {
+			if (method.getName().equals("setValue")) {
+				final Class<?>[] parameters = method.getParameterTypes();
+				if (parameters.length == 1) {
+
+					if (!method.isAccessible())
+						method.setAccessible(true);
+
+					try {
+						final Object[] params = { value };
+						method.invoke(managedObject, params);
+					} catch (IllegalAccessException e) {
+						managedObject = null;
+					} catch (InvocationTargetException e) {
+						managedObject = null;
+					}
+
+					break;
+				}
+			}
+
+		}
+
+		return managedObject;
 	}
 
 	public void release(E value) {

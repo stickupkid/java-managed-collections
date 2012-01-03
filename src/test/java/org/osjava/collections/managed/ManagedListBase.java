@@ -2,6 +2,7 @@ package org.osjava.collections.managed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
@@ -38,6 +39,25 @@ public class ManagedListBase {
 		final ManagedList<ManagedObject<Integer>> newList = list.add(managedObject);
 
 		assertEquals("List element at 0 is identical as", managedObject, newList.getAt(0));
+	}
+
+	@Test
+	public void retrieve_list_element_with_valid_parameter_should_not_throw_exception()
+			throws IllegalArgumentException {
+		final Integer value = 1;
+		final ManagedObject<Integer> managedObject = list.retrieve(value);
+
+		assertEquals(value, managedObject.getValue());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void retrieve_list_element_with_invalid_parameter_should_not_throw_exception()
+			throws IllegalArgumentException {
+		final ManagedObject<Integer> managedObject = list.retrieve("Invalid");
+
+		if (null != managedObject.getValue()) {
+			Assert.fail("This should fail with invalid IllegalArgumentException");
+		}
 	}
 
 	@Test

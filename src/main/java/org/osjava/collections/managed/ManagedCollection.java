@@ -6,6 +6,8 @@ public interface ManagedCollection<E extends ManagedObject<?>> {
 
 	public E retrieve();
 
+	public <T> E retrieve(T value) throws IllegalArgumentException;
+
 	public void release(E value);
 
 	public ManagedCollection<E> removeAll();
