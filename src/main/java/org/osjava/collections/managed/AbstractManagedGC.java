@@ -35,6 +35,12 @@ public abstract class AbstractManagedGC<T> implements ManagedGC<T> {
 	}
 
 	@Override
+	public ManagedIterator<T> iterator() {
+		// TODO : Pool this iterator.
+		return AbstractManagedGCIterator.newInstance(new ArrayList<T>(_marked));
+	}
+
+	@Override
 	public void mark(T value) {
 		if (_marked.indexOf(value) < 0) {
 			_marked.add(value);

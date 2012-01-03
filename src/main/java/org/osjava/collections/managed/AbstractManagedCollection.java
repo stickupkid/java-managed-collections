@@ -24,19 +24,25 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 	}
 
 	public E retrieve() {
-		// TODO Auto-generated method stub
-		return null;
+		return managedObjectPool.retain();
 	}
 
 	public void release(E value) {
-		// TODO Auto-generated method stub
+		final ManagedIterator<ManagedBinding<E>> iterator = managedBindingGC.iterator();
+		while (iterator.hasNext()) {
+			final ManagedBinding<E> binding = iterator.next();
+			if (binding.getManagedObject().equals(value)) {
+				mark(binding);
+				break;
+			}
+		}
 	}
 
 	protected void mark(ManagedBinding<E> binding) {
-
+		managedBindingGC.mark(binding);
 	}
 
 	protected void unmark(ManagedBinding<E> binding) {
-
+		managedBindingGC.unmark(binding);
 	}
 }

@@ -1,5 +1,6 @@
 package org.osjava.collections.managed.mutable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.osjava.collections.managed.AbstractManagedCollection;
@@ -68,6 +69,7 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 			for (final ManagedBinding<E> binding : _list) {
 				if (binding.getManagedObject().equals(value)) {
 					_list.remove(binding);
+					mark(binding);
 					break;
 				}
 			}
@@ -85,15 +87,18 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 		final ManagedBinding<E> binding = _list.get(index);
 		if (!binding.isEmpty())
 			result = binding.getManagedObject();
+
 		return result;
 	}
 
 	@Override
 	public int indexOf(E value) {
 		int result = -1;
+
 		final int total = _list.size();
 		for (int i = 0; i < total; i++) {
 			final ManagedBinding<E> binding = _list.get(i);
+
 			if (binding.getManagedObject().equals(value)) {
 				result = 1;
 				break;
@@ -104,32 +109,55 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 
 	@Override
 	public ManagedCollection<E> removeAll() {
-		// TODO Auto-generated method stub
-		return null;
+		for (ManagedBinding<E> binding : _list) {
+			managedBindingGC.mark(binding);
+		}
+		managedBindingGC.sweep();
+
+		_list.removeAll(_list);
+
+		return this;
 	}
 
 	@Override
 	public Boolean equals(ManagedCollection<E> value) {
-		// TODO Auto-generated method stub
-		return null;
+		Boolean result = false;
+		if (value instanceof ManagedList) {
+			if (size() == value.size()) {
+				result = true;
+				ManagedIterator<E> iteratorA = iterator();
+				ManagedIterator<E> iteratorB = value.iterator();
+				while (iteratorA.hasNext()) {
+					if (!iteratorA.next().equals(iteratorB.next())) {
+						result = false;
+						break;
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
 	public Boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return null;
+		return _list.size() == 0;
 	}
 
 	@Override
 	public ManagedIterator<E> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO : Pool this iterator.
+		return AbstractManagedListIterator.newInstance(_list);
 	}
 
 	@Override
 	public List<E> toList() {
-		// TODO Auto-generated method stub
-		return null;
+		final List<E> list = new ArrayList<E>();
+		for (ManagedBinding<E> binding : _list) {
+			if (!binding.isEmpty())
+				list.add(binding.getManagedObject());
+		}
+
+		return list;
 	}
 
 	@Override

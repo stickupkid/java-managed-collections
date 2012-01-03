@@ -13,4 +13,6 @@ public interface ManagedGC<T> {
 	public void unmark(T value);
 
 	public void sweep();
+
+	public ManagedIterator<T> iterator();
 }

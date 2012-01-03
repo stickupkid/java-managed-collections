@@ -1,8 +1,8 @@
 package org.osjava.collections.managed;
 
-public interface ManagedIterator<E extends ManagedObject<?>> {
+public interface ManagedIterator<T> {
 
-	public E next();
+	public T next();
 
 	public Boolean hasNext();
 }
