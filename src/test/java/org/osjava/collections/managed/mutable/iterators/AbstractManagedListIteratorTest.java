@@ -1,5 +1,7 @@
 package org.osjava.collections.managed.mutable.iterators;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,38 +40,38 @@ public class AbstractManagedListIteratorTest {
 	@Test
 	public void verify_num_items_in_iterable_is_1() {
 		int total = 1;
-		Assert.assertEquals(countIterators(total), total);
+		assertEquals(total, countIterators(total));
 	}
 
 	@Test
 	public void verify_num_items_in_iterable_is_2() {
 		int total = 2;
-		Assert.assertEquals(countIterators(total), total);
+		assertEquals(total, countIterators(total));
 	}
 
 	@Test
 	public void verify_num_items_in_iterable_is_10() {
 		int total = 10;
-		Assert.assertEquals(countIterators(total), total);
+		assertEquals(total, countIterators(total));
 	}
 
 	@Test
 	public void verify_num_items_in_iterable_is_100() {
 		int total = 100;
-		Assert.assertEquals(countIterators(total), total);
+		assertEquals(total, countIterators(total));
 	}
 
 	private int countIterators(final int total) {
 		populateList(total);
 
 		AbstractManagedListIterator<ManagedObject<?>> iterator =
-				AbstractManagedListIterator
-						.newInstance(new ArrayList<ManagedBinding<ManagedObject<?>>>());
+				AbstractManagedListIterator.newInstance(_list);
 
 		int count = 0;
 		while (iterator.hasNext()) {
-			iterator.next();
-			count++;
+			ManagedObject<?> managedObject = iterator.next();
+			if (null != managedObject)
+				count++;
 		}
 
 		return count;
@@ -112,8 +114,11 @@ public class AbstractManagedListIteratorTest {
 						}
 
 					};
+
 			binding.setManagedObject(factory.create());
 			_list.add(binding);
 		}
+
+		assertEquals(numItems, _list.size());
 	}
 }

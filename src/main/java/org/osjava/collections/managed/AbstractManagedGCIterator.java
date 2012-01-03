@@ -24,7 +24,7 @@ public class AbstractManagedGCIterator<T> implements ManagedIterator<T> {
 	}
 
 	@Override
-	public Boolean hasNext() {
+	public boolean hasNext() {
 		return _iterator.hasNext();
 	}
 }

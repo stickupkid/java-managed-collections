@@ -32,19 +32,23 @@ public class AbstractManagedListIterator<T extends ManagedObject<?>> implements 
 		if (_pointer < _list.size())
 			result = _list.get(_pointer).getManagedObject();
 
+		_pointer++;
+
 		return result;
 	}
 
 	@Override
-	public Boolean hasNext() {
-		Boolean result = false;
+	public boolean hasNext() {
+		boolean result = false;
 		while (_pointer < _list.size()) {
 			ManagedBinding<T> binding = _list.get(_pointer);
-			if (!binding.isEmpty()) {
+
+			if (binding.isEmpty()) {
+				_pointer++;
+			} else {
 				result = true;
 				break;
 			}
-			_pointer++;
 		}
 
 		return result;
