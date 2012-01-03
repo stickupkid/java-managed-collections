@@ -1,4 +1,4 @@
-package org.osjava.collections.managed.mutable.factories;
+package org.osjava.collections.managed.common;
 
 import org.osjava.collections.managed.ManagedCollection;
 import org.osjava.collections.managed.ManagedFactory;

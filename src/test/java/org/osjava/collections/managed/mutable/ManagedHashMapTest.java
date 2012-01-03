@@ -2,7 +2,7 @@ package org.osjava.collections.managed.mutable;
 
 import org.junit.Before;
 import org.osjava.collections.managed.ManagedMapBase;
-import org.osjava.collections.managed.mutable.factories.ManagedIntegerFactory;
+import org.osjava.collections.managed.common.ManagedIntegerFactory;
 
 public class ManagedHashMapTest extends ManagedMapBase {
 
