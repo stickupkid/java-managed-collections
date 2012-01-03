@@ -8,7 +8,7 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		ManagedCollection<E> {
 
 	private final ManagedFactory<ManagedBinding<E>> bindingFactory = GenericManagedBindingFactory
-			.newInstance();
+			.newInstance(this);
 
 	protected final ManagedGC<E> managedObjectGC = GenericManagedGC.newInstance();
 

@@ -107,12 +107,6 @@ public class AbstractManagedListIteratorTest {
 						public void setManagedObject(ManagedObject<?> value) {
 							_managedObject = value;
 						}
-
-						@Override
-						public void setCollection(ManagedCollection<ManagedObject<?>> collection) {
-							_managedCollection = collection;
-						}
-
 					};
 
 			binding.setManagedObject(factory.create());

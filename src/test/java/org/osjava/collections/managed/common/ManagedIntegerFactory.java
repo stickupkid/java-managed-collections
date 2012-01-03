@@ -20,8 +20,7 @@ public class ManagedIntegerFactory implements ManagedFactory<ManagedObject<Integ
 		}
 
 		@Override
-		public ManagedCollection<ManagedObject<?>> getCollection() {
-			// TODO Auto-generated method stub
+		public ManagedCollection<ManagedObject<Integer>> getCollection() {
 			return null;
 		}
 

@@ -1,18 +1,29 @@
 package org.osjava.collections.managed.generic;
 
+import org.osjava.collections.managed.ManagedBinding;
+import org.osjava.collections.managed.ManagedCollection;
 import org.osjava.collections.managed.ManagedFactory;
 import org.osjava.collections.managed.ManagedObject;
 
-public final class GenericManagedBindingFactory<T> implements ManagedFactory<T> {
+public final class GenericManagedBindingFactory<E extends ManagedObject<?>> implements
+		ManagedFactory<ManagedBinding<E>> {
 
-	public static <T> GenericManagedBindingFactory<T> newInstance() {
-		return new GenericManagedBindingFactory<T>();
+	private final ManagedCollection<E> _collection;
+
+	private GenericManagedBindingFactory(ManagedCollection<E> collection) {
+		if (null == collection)
+			throw new IllegalArgumentException("ManagedCollection can not be null");
+
+		_collection = collection;
+	}
+
+	public static <E extends ManagedObject<?>> GenericManagedBindingFactory<E> newInstance(
+			ManagedCollection<E> collection) {
+		return new GenericManagedBindingFactory<E>(collection);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public T create() {
-		// TODO : T should extend ManagedBinding
-		return (T) new GenericManagedBinding<ManagedObject<?>>();
+	public ManagedBinding<E> create() {
+		return new GenericManagedBinding<E>(_collection);
 	}
 }

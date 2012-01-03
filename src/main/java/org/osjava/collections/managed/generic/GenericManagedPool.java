@@ -61,7 +61,7 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 	@Override
 	public void release(E value) {
 		if (value instanceof ManagedPoolItem) {
-			final ManagedPoolItem poolItem = (ManagedPoolItem) value;
+			final ManagedPoolItem<?> poolItem = (ManagedPoolItem<?>) value;
 			if (poolItem.getCollection().equals(_collection)) {
 				final int index = _utilised.indexOf(value);
 				if (index >= 0) {

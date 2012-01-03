@@ -4,27 +4,22 @@ import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedCollection;
 import org.osjava.collections.managed.ManagedObject;
 
-public class GenericManagedBinding<T extends ManagedObject<?>> implements ManagedBinding<T> {
+public class GenericManagedBinding<E extends ManagedObject<?>> implements ManagedBinding<E> {
 
-	private ManagedCollection<ManagedObject<?>> _collection;
+	private E _managedObject;
 
-	private T _managedObject;
+	private final ManagedCollection<E> _collection;
 
-	public GenericManagedBinding() {
-
-	}
-
-	@Override
-	public ManagedCollection<ManagedObject<?>> getCollection() {
-		return _collection;
-	}
-
-	@Override
-	public void setCollection(ManagedCollection<ManagedObject<?>> collection) {
+	public GenericManagedBinding(ManagedCollection<E> collection) {
 		if (null == collection)
 			throw new IllegalArgumentException("ManagedCollection can not be null");
 
 		_collection = collection;
+	}
+
+	@Override
+	public ManagedCollection<E> getCollection() {
+		return _collection;
 	}
 
 	@Override
@@ -33,12 +28,12 @@ public class GenericManagedBinding<T extends ManagedObject<?>> implements Manage
 	}
 
 	@Override
-	public T getManagedObject() {
+	public E getManagedObject() {
 		return _managedObject;
 	}
 
 	@Override
-	public void setManagedObject(T value) {
+	public void setManagedObject(E value) {
 		_managedObject = value;
 	}
 }

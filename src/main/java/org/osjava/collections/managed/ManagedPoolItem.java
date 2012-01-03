@@ -1,6 +1,6 @@
 package org.osjava.collections.managed;
 
-public interface ManagedPoolItem {
+public interface ManagedPoolItem<E extends ManagedObject<?>> {
 
-	public ManagedCollection<ManagedObject<?>> getCollection();
+	public ManagedCollection<E> getCollection();
 }
