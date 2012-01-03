@@ -120,13 +120,18 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public Boolean equals(ManagedCollection<E> value) {
-		Boolean result = false;
+	@SuppressWarnings("unchecked")
+	public boolean equals(Object value) {
+		if (value == this)
+			return true;
+
+		boolean result = false;
 		if (value instanceof ManagedList) {
-			if (size() == value.size()) {
+			ManagedList<E> list = (ManagedList<E>) value;
+			if (size() == list.size()) {
 				result = true;
 				ManagedIterator<E> iteratorA = iterator();
-				ManagedIterator<E> iteratorB = value.iterator();
+				ManagedIterator<E> iteratorB = list.iterator();
 				while (iteratorA.hasNext()) {
 					if (!iteratorA.next().equals(iteratorB.next())) {
 						result = false;

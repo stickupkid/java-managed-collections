@@ -45,4 +45,17 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 	protected void unmark(ManagedBinding<E> binding) {
 		managedBindingGC.unmark(binding);
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 1;
+
+		ManagedIterator<E> iter = iterator();
+		while (iter.hasNext()) {
+			E item = iter.next();
+			hash = hash * 31 + item.hashCode();
+		}
+
+		return hash;
+	}
 }

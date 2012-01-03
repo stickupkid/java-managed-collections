@@ -1,6 +1,7 @@
 package org.osjava.collections.managed;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Test;
@@ -37,5 +38,10 @@ public class ManagedListBase {
 		final ManagedList<ManagedObject<Integer>> newList = list.add(managedObject);
 
 		assertEquals("List element at 0 is identical as", managedObject, newList.getAt(0));
+	}
+
+	@Test
+	public void list_should_equal_self() {
+		assertTrue(list.equals(list));
 	}
 }

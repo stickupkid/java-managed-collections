@@ -66,9 +66,9 @@ public abstract class AbstractManagedMap<K, E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public Boolean equals(ManagedCollection<E> value) {
+	public boolean equals(Object value) {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
 	}
 
 	@Override

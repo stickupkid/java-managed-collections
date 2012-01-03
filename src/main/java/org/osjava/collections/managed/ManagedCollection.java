@@ -10,8 +10,6 @@ public interface ManagedCollection<E extends ManagedObject<?>> {
 
 	public ManagedCollection<E> removeAll();
 
-	public Boolean equals(ManagedCollection<E> value);
-
 	public int size();
 
 	public Boolean isEmpty();
