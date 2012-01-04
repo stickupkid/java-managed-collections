@@ -1,4 +1,4 @@
-package org.osjava.collections.managed.mutable.iterators;
+package org.osjava.collections.managed.mutable;
 
 import static org.junit.Assert.assertEquals;
 

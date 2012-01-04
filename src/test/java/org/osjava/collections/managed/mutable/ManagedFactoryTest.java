@@ -1,4 +1,4 @@
-package org.osjava.collections.managed.mutable.factories;
+package org.osjava.collections.managed.mutable;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
