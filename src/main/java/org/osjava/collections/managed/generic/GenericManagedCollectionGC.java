@@ -8,7 +8,7 @@ import org.osjava.collections.managed.ManagedGC;
 
 public class GenericManagedCollectionGC implements ManagedCollectionGC {
 
-	private static final long SWEEP_TIMEOUT = 500000;
+	private static final long SWEEP_TIMEOUT = 5000000;
 
 	private final List<ManagedGC<?>> _managedObjectGC = new CopyOnWriteArrayList<ManagedGC<?>>();
 
@@ -30,7 +30,7 @@ public class GenericManagedCollectionGC implements ManagedCollectionGC {
 			@Override
 			public void run() {
 				while (_active) {
-					if (System.nanoTime() - _nanoTime < SWEEP_TIMEOUT) {
+					if (System.nanoTime() - _nanoTime > SWEEP_TIMEOUT) {
 						for (ManagedGC<?> gc : _managedObjectGC) {
 							gc.sweep();
 						}
@@ -39,7 +39,6 @@ public class GenericManagedCollectionGC implements ManagedCollectionGC {
 							gc.sweep();
 						}
 
-						// Reset the timeout.
 						_nanoTime = System.nanoTime();
 					}
 				}

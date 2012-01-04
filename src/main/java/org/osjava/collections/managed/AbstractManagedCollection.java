@@ -5,14 +5,17 @@ import java.lang.reflect.Method;
 
 import org.osjava.collections.managed.generic.GenericManagedBindingFactory;
 import org.osjava.collections.managed.generic.GenericManagedCollectionGC;
+import org.osjava.collections.managed.generic.GenericManagedCollectionInspector;
 import org.osjava.collections.managed.generic.GenericManagedGC;
 import org.osjava.collections.managed.generic.GenericManagedPool;
 
 public abstract class AbstractManagedCollection<E extends ManagedObject<?>> implements
 		ManagedCollection<E> {
 
-	private final ManagedFactory<ManagedBinding<E>> bindingFactory = GenericManagedBindingFactory
-			.newInstance(this);
+	private final ManagedFactory<ManagedBinding<E>> _bindingFactory = GenericManagedBindingFactory
+			.newInstance();
+
+	private final ManagedCollectionInspector<E> _inspector;
 
 	protected final ManagedGC<E> managedObjectGC = GenericManagedGC.newInstance();
 
@@ -28,11 +31,15 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		managedObjectGC.onRemoveListener(new ManagedObjectRemoveListener<E>());
 		managedBindingGC.onRemoveListener(new ManagedBindingRemoveListener<ManagedBinding<E>>());
 
-		bindingPool = GenericManagedPool.newInstance(this, managedBindingGC, bindingFactory);
+		bindingPool = GenericManagedPool.newInstance(this, managedBindingGC, _bindingFactory);
 		managedObjectPool = GenericManagedPool.newInstance(this, managedObjectGC, factory);
 
 		gc.addManagedObjectGC(managedObjectGC);
 		gc.addManagedBindingGC(managedBindingGC);
+
+		_inspector =
+				GenericManagedCollectionInspector.newInstance(bindingPool, managedBindingGC,
+						managedObjectPool, managedObjectGC);
 	}
 
 	public E retrieve() {
@@ -99,6 +106,11 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		}
 
 		return hash;
+	}
+
+	@Override
+	public ManagedCollectionInspector<E> inspector() {
+		return _inspector;
 	}
 
 	private class ManagedObjectRemoveListener<T extends E> implements ManagedGCRemoveListener<T> {

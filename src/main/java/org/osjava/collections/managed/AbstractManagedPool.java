@@ -13,6 +13,8 @@ public abstract class AbstractManagedPool<T extends ManagedObject<?>, E, F exten
 		if (null == gc)
 			throw new IllegalArgumentException("ManagedGC can not be null");
 
+		priority = 100;
+
 		_gc = gc;
 		_gc.addObserver(_gcObserver);
 	}
@@ -44,10 +46,6 @@ public abstract class AbstractManagedPool<T extends ManagedObject<?>, E, F exten
 
 		@Override
 		public void onFinishSweep(ManagedGC<E> gc) {
-			if (priority <= 0) {
-				_gc.removeObserver(_gcObserver);
-			}
-
 			priority--;
 			if (priority < 0)
 				priority = 0;

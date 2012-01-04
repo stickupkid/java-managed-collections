@@ -43,7 +43,7 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 	}
 
 	@Override
-	public E retain() {
+	public synchronized E retain() {
 		if (getAvailable() < 1)
 			allocate();
 
@@ -59,7 +59,7 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 	}
 
 	@Override
-	public void release(E value) {
+	public synchronized void release(E value) {
 		if (value instanceof ManagedPoolItem) {
 			final ManagedPoolItem<?> poolItem = (ManagedPoolItem<?>) value;
 			if (poolItem.getCollection().equals(_collection)) {
@@ -94,7 +94,7 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 	protected void allocate() {
 		int index = ALLOCATIONS;
 		while (--index > -1) {
-			_available.add(getFactory().create());
+			_available.add(getFactory().create(_collection));
 		}
 		super.allocate();
 	}

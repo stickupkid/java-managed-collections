@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedCollection;
 import org.osjava.collections.managed.ManagedObject;
+import org.osjava.collections.managed.common.ManagedInteger;
 import org.osjava.collections.managed.common.ManagedIntegerFactory;
-import org.osjava.collections.managed.mutable.AbstractManagedListIterator;
 
 public class AbstractManagedListIteratorTest {
 
@@ -79,6 +79,8 @@ public class AbstractManagedListIteratorTest {
 
 	private void populateList(int numItems) {
 		final ManagedIntegerFactory factory = new ManagedIntegerFactory();
+		final ManagedCollection<ManagedInteger> managedCollection =
+				ManagedArrayList.newInstance(factory);
 
 		for (int i = 0; i < numItems; i++) {
 			final ManagedBinding<ManagedObject<?>> binding =
@@ -109,7 +111,7 @@ public class AbstractManagedListIteratorTest {
 						}
 					};
 
-			binding.setManagedObject(factory.create());
+			binding.setManagedObject(factory.create(managedCollection));
 			_list.add(binding);
 		}
 

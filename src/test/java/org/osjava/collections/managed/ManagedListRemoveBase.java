@@ -4,10 +4,11 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
 import org.junit.Test;
+import org.osjava.collections.managed.common.ManagedInteger;
 
 public class ManagedListRemoveBase {
 
-	protected ManagedList<ManagedObject<Integer>> list;
+	protected ManagedList<ManagedInteger> list;
 
 	@After
 	public void tearDown() {

@@ -2,5 +2,5 @@ package org.osjava.collections.managed;
 
 public interface ManagedFactory<T> {
 
-	public T create();
+	public <E extends ManagedObject<?>> T create(ManagedCollection<E> collection);
 }

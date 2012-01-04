@@ -24,12 +24,12 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 
 	@Override
 	public ManagedList<E> add(E value) {
-		addAt(value, size());
+		add(value, size());
 		return this;
 	}
 
 	@Override
-	public ManagedList<E> addAll(ManagedList<E> collection) {
+	public ManagedList<E> add(ManagedList<E> collection) {
 		final ManagedIterator<E> iterator = collection.iterator();
 		while (iterator.hasNext()) {
 			add(iterator.next());
@@ -38,7 +38,7 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public ManagedList<E> addAt(E value, int index) {
+	public ManagedList<E> add(E value, int index) {
 		if (!contains(value)) {
 			final ManagedBinding<E> binding = bindingPool.retain();
 			binding.setManagedObject(value);
@@ -66,6 +66,19 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	public ManagedList<E> remove(E value) {
 		for (final ManagedBinding<E> binding : _list) {
 			if (binding.getManagedObject().equals(value)) {
+				_list.remove(binding);
+				mark(binding);
+				break;
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public ManagedList<E> remove(int value) {
+		E managedObject = getAt(value);
+		for (final ManagedBinding<E> binding : _list) {
+			if (binding.getManagedObject().equals(managedObject)) {
 				_list.remove(binding);
 				mark(binding);
 				break;
@@ -161,5 +174,10 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	@Override
 	public int size() {
 		return _list.size();
+	}
+
+	@Override
+	public String toString() {
+		return _list.toString();
 	}
 }

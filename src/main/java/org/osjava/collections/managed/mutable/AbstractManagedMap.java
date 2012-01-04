@@ -93,4 +93,9 @@ public abstract class AbstractManagedMap<K, E extends ManagedObject<?>> extends
 	public int size() {
 		return _map.size();
 	}
+
+	@Override
+	public String toString() {
+		return _map.toString();
+	}
 }

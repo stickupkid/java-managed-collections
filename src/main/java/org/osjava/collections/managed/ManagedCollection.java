@@ -18,5 +18,7 @@ public interface ManagedCollection<E extends ManagedObject<?>> {
 
 	public ManagedIterator<E> iterator();
 
+	public ManagedCollectionInspector<E> inspector();
+
 	public List<E> toList();
 }

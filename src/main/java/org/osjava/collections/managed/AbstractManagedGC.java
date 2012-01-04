@@ -6,7 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractManagedGC<T> implements ManagedGC<T> {
 
-	protected static final long SWEEP_TIMEOUT = 500000000;
+	protected static final long SWEEP_TIMEOUT = 5000000l;
 
 	protected final List<T> marked = new ArrayList<T>();
 
