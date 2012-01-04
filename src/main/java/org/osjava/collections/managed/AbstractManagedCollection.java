@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.osjava.collections.managed.generic.GenericManagedBindingFactory;
+import org.osjava.collections.managed.generic.GenericManagedCollectionGC;
 import org.osjava.collections.managed.generic.GenericManagedGC;
 import org.osjava.collections.managed.generic.GenericManagedPool;
 
@@ -21,12 +22,17 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 
 	protected final ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool;
 
+	private static final ManagedCollectionGC gc = GenericManagedCollectionGC.newInstance();
+
 	public AbstractManagedCollection(ManagedFactory<E> factory) {
 		managedObjectGC.onRemoveListener(new ManagedObjectRemoveListener<E>());
 		managedBindingGC.onRemoveListener(new ManagedBindingRemoveListener<ManagedBinding<E>>());
 
 		bindingPool = GenericManagedPool.newInstance(this, managedBindingGC, bindingFactory);
 		managedObjectPool = GenericManagedPool.newInstance(this, managedObjectGC, factory);
+
+		gc.addManagedObjectGC(managedObjectGC);
+		gc.addManagedBindingGC(managedBindingGC);
 	}
 
 	public E retrieve() {
