@@ -21,8 +21,10 @@ public class GenericManagedCollectionGC implements ManagedCollectionGC {
 	private long _nanoTime;
 
 	private GenericManagedCollectionGC() {
+
 		_active = true;
 		_nanoTime = System.nanoTime();
+
 		_thread = new Thread(new Runnable() {
 
 			@Override
@@ -73,5 +75,4 @@ public class GenericManagedCollectionGC implements ManagedCollectionGC {
 	public <B> void removeManagedBindingGC(ManagedGC<B> gc) {
 		_managedBindingGC.remove(gc);
 	}
-
 }
