@@ -24,7 +24,10 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 
 	private final F _factory;
 
-	private GenericManagedPool(ManagedCollection<T> collection, ManagedGC<E> gc, F factory) {
+	private final boolean _strictAllocations;
+
+	private GenericManagedPool(final ManagedCollection<T> collection, final ManagedGC<E> gc,
+			final F factory, final boolean strictAllocations) {
 		super(gc);
 
 		if (null == collection)
@@ -34,12 +37,13 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 
 		_factory = factory;
 		_collection = collection;
+		_strictAllocations = strictAllocations;
 	}
 
 	public static <T extends ManagedObject<?>, E, F extends ManagedFactory<E>>
-			GenericManagedPool<T, E, F> newInstance(ManagedCollection<T> collection,
-					ManagedGC<E> gc, F factory) {
-		return new GenericManagedPool<T, E, F>(collection, gc, factory);
+			GenericManagedPool<T, E, F> newInstance(final ManagedCollection<T> collection,
+					final ManagedGC<E> gc, final F factory, final boolean strictAllocations) {
+		return new GenericManagedPool<T, E, F>(collection, gc, factory, strictAllocations);
 	}
 
 	@Override
@@ -48,8 +52,15 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 			allocate();
 
 		final E item = _available.remove(_available.size() - 1);
+		if (!_strictAllocations)
+			_utilised.add(item);
+		else {
 
-		_utilised.add(item);
+			if (_utilised.indexOf(item) < 0) {
+				_utilised.add(item);
+			} else
+				throw new IllegalAccessError("Item is already in use");
+		}
 
 		priority++;
 		if (priority >= 100)
@@ -61,16 +72,28 @@ public final class GenericManagedPool<T extends ManagedObject<?>, E, F extends M
 	@Override
 	public synchronized void release(E value) {
 		if (value instanceof ManagedPoolItem) {
+
 			final ManagedPoolItem<?> poolItem = (ManagedPoolItem<?>) value;
+
 			if (poolItem.getCollection().equals(_collection)) {
 				final int index = _utilised.indexOf(value);
-				if (index >= 0) {
+
+				if (!_strictAllocations) {
+
 					final E item = _utilised.remove(index);
 					_available.add(item);
-				} else
-					throw new IllegalAccessError("Item has already been released");
+				} else {
+
+					if (index >= 0) {
+						final E item = _utilised.remove(index);
+						_available.add(item);
+					} else
+						throw new IllegalAccessError("Item has already been released");
+				}
+
 			} else
 				throw new IllegalAccessError("Released item collection is not valid");
+
 		} else
 			throw new IllegalArgumentException("Value us not a valid ManagedPoolItem");
 	}

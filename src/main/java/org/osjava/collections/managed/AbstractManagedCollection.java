@@ -31,8 +31,9 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		managedObjectGC.onRemoveListener(new ManagedObjectRemoveListener<E>());
 		managedBindingGC.onRemoveListener(new ManagedBindingRemoveListener<ManagedBinding<E>>());
 
-		bindingPool = GenericManagedPool.newInstance(this, managedBindingGC, _bindingFactory);
-		managedObjectPool = GenericManagedPool.newInstance(this, managedObjectGC, factory);
+		bindingPool =
+				GenericManagedPool.newInstance(this, managedBindingGC, _bindingFactory, false);
+		managedObjectPool = GenericManagedPool.newInstance(this, managedObjectGC, factory, false);
 
 		gc.addManagedObjectGC(managedObjectGC);
 		gc.addManagedBindingGC(managedBindingGC);
@@ -76,7 +77,7 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		return managedObject;
 	}
 
-	public void release(E value) {
+	public synchronized void release(E value) {
 		final ManagedIterator<ManagedBinding<E>> iterator = managedBindingGC.iterator();
 		while (iterator.hasNext()) {
 			final ManagedBinding<E> binding = iterator.next();
@@ -87,22 +88,22 @@ public abstract class AbstractManagedCollection<E extends ManagedObject<?>> impl
 		}
 	}
 
-	protected void mark(ManagedBinding<E> binding) {
+	protected final void mark(ManagedBinding<E> binding) {
 		managedBindingGC.mark(binding);
 	}
 
-	protected void unmark(ManagedBinding<E> binding) {
+	protected final void unmark(ManagedBinding<E> binding) {
 		managedBindingGC.unmark(binding);
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = 1;
+		int hash = 17;
 
 		ManagedIterator<E> iter = iterator();
 		while (iter.hasNext()) {
 			E item = iter.next();
-			hash = hash * 31 + item.hashCode();
+			hash *= 31 + item.hashCode();
 		}
 
 		return hash;

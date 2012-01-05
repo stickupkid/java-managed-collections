@@ -2,7 +2,6 @@ package org.osjava.collections.managed;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractManagedGC<T> implements ManagedGC<T> {
 
@@ -10,8 +9,7 @@ public abstract class AbstractManagedGC<T> implements ManagedGC<T> {
 
 	protected final List<T> marked = new ArrayList<T>();
 
-	protected final List<ManagedGCObserver<T>> listeners =
-			new CopyOnWriteArrayList<ManagedGCObserver<T>>();
+	protected final List<ManagedGCObserver<T>> listeners = new ArrayList<ManagedGCObserver<T>>();
 
 	protected ManagedGCRemoveListener<T> removeListener;
 
@@ -51,14 +49,20 @@ public abstract class AbstractManagedGC<T> implements ManagedGC<T> {
 
 	@Override
 	public void mark(T value) {
-		if (marked.indexOf(value) < 0) {
-			marked.add(value);
+		synchronized (marked) {
+			if (!marked.contains(value)) {
+				marked.add(value);
+			}
 		}
 	}
 
 	@Override
 	public void unmark(T value) {
-		marked.remove(value);
+		synchronized (marked) {
+			if (marked.contains(value)) {
+				marked.remove(value);
+			}
+		}
 	}
 
 	@Override

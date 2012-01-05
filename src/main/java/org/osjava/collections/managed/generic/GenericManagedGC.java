@@ -15,11 +15,18 @@ public final class GenericManagedGC<T> extends AbstractManagedGC<T> {
 	@Override
 	protected void onSweep() {
 		long time = System.nanoTime();
-		for (int i = marked.size() - 1; i >= 0; i--) {
-			removeListener.onRemove(marked.remove(i));
+		synchronized (marked) {
 
-			if (System.nanoTime() - time > SWEEP_TIMEOUT)
-				break;
+			System.out.println(">>> " + marked.size());
+
+			for (int i = marked.size() - 1; i >= 0; i--) {
+				removeListener.onRemove(marked.remove(i));
+
+				if (System.nanoTime() - time > SWEEP_TIMEOUT)
+					break;
+			}
+
+			System.out.println(">>>> " + marked.size());
 		}
 	}
 }
