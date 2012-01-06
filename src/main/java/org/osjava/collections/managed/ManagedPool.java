@@ -37,9 +37,9 @@ public interface ManagedPool<T> {
 			public void onFinishSweep(ManagedPoolGC<T> gc);
 		}
 
-		public interface ManagedCollectionGC<T> {
+		public interface ManagedCollectionGC {
 
-			public void add(ManagedPoolGC<T> gc);
+			public void add(ManagedPoolGC<?> gc);
 		}
 	}
 }
