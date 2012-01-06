@@ -1,12 +1,13 @@
 package org.osjava.collections.managed.mutable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedCollection;
-import org.osjava.collections.managed.ManagedIterator;
 import org.osjava.collections.managed.ManagedList;
 
 public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T> implements
@@ -53,10 +54,10 @@ public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T
 		if (null == collection)
 			throw new IllegalArgumentException("Collection can not be null");
 
-		final ManagedIterator<T> iterator = collection.iterator();
-		while (iterator.hasNext()) {
-			add(iterator.next());
+		for (T item : collection) {
+			add(item);
 		}
+
 		return this;
 	}
 
@@ -108,8 +109,7 @@ public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T
 			throw new IndexOutOfBoundsException();
 		}
 
-		final ManagedBinding<T> binding = _list.get(index);
-		return binding.getValue();
+		return _list.get(index).getValue();
 	}
 
 	@Override
@@ -144,6 +144,17 @@ public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = 17;
+		final int total = size();
+		for (int i = 0; i < total; i++) {
+			final ManagedBinding<T> item = _list.get(i);
+			hash *= 31 + item.hashCode();
+		}
+		return hash;
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean equals(Object value) {
 		if (value == this)
@@ -151,16 +162,18 @@ public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T
 
 		boolean result = false;
 		if (value instanceof ManagedList) {
-			ManagedList<T> list = (ManagedList<T>) value;
-			if (size() == list.size()) {
+			final ManagedList<T> list = (ManagedList<T>) value;
+			final int total = size();
+			if (total == list.size()) {
 				result = true;
-				ManagedIterator<T> iteratorA = iterator();
-				ManagedIterator<T> iteratorB = list.iterator();
-				while (iteratorA.hasNext()) {
-					if (!iteratorA.next().equals(iteratorB.next())) {
+				for (int i = 0; i < total; i++) {
+					final T a = getAt(i);
+					final T b = list.getAt(i);
+					if (!a.equals(b)) {
 						result = false;
 						break;
 					}
+
 				}
 			}
 		}
@@ -173,9 +186,9 @@ public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T
 	}
 
 	@Override
-	public ManagedIterator<T> iterator() {
+	public Iterator<T> iterator() {
 		// TODO : Pool this iterator.
-		return AbstractManagedListIterator.newInstance(_list);
+		return new ManagedListIterator(new ArrayList<ManagedBinding<T>>(_list));
 	}
 
 	@Override
@@ -197,5 +210,62 @@ public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T
 	@Override
 	public String toString() {
 		return _list.toString();
+	}
+
+	private class ManagedListIterator implements Iterator<T>, Iterable<T> {
+
+		private final List<ManagedBinding<T>> _list;
+
+		private int _pointer;
+
+		public ManagedListIterator(List<ManagedBinding<T>> list) {
+			if (null == list)
+				throw new IllegalArgumentException("List should not be null");
+
+			_list = list;
+			_pointer = 0;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return this;
+		}
+
+		@Override
+		public boolean hasNext() {
+			boolean result = false;
+			while (_pointer < _list.size()) {
+				ManagedBinding<T> binding = _list.get(_pointer);
+
+				if (binding.isEmpty()) {
+					_pointer++;
+				} else {
+					result = true;
+					break;
+				}
+			}
+
+			return result;
+		}
+
+		@Override
+		public T next() {
+			if (_pointer >= _list.size())
+				throw new NoSuchElementException();
+
+			T result = null;
+
+			if (_pointer < _list.size())
+				result = _list.get(_pointer).getValue();
+
+			_pointer++;
+
+			return result;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

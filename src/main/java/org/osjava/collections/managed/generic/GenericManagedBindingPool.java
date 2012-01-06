@@ -24,7 +24,7 @@ public final class GenericManagedBindingPool<T> extends AbstractManagedPool<T> {
 		if (null == collection)
 			throw new IllegalArgumentException("ManagedCollection can not be null");
 
-		init(new GenericManagedBindingPoolGC());
+		init(new GenericManagedPoolGC());
 
 		_collection = collection;
 		_factory = new GenericManagedBindingFactory<T>(collection);
@@ -102,14 +102,60 @@ public final class GenericManagedBindingPool<T> extends AbstractManagedPool<T> {
 		super.allocate();
 	}
 
-	private class GenericManagedBindingPoolGC extends AbstractManagedPoolGC {
+	public class GenericManagedPoolGC implements ManagedPoolGC<T> {
 
-		private GenericManagedBindingPoolGC() {
+		protected static final long SWEEP_TIMEOUT = 500000000;
+
+		protected final List<ManagedBinding<T>> marked = new ArrayList<ManagedBinding<T>>();
+
+		protected final List<ManagedPoolGCObserver<T>> listeners =
+				new ArrayList<ManagedPoolGCObserver<T>>();
+
+		public GenericManagedPoolGC() {
+
 		}
 
 		@Override
-		protected void onSweep() {
+		public void addObserver(final ManagedPoolGCObserver<T> observer) {
+			if (listeners.indexOf(observer) < 0) {
+				listeners.add(observer);
+			}
+		}
 
+		@Override
+		public void removeObserver(final ManagedPoolGCObserver<T> observer) {
+			listeners.remove(observer);
+		}
+
+		@Override
+		public Boolean hasObserver(final ManagedPoolGCObserver<T> observer) {
+			return listeners.contains(observer);
+		}
+
+		@Override
+		public void mark(final ManagedBinding<T> value) {
+			if (!marked.contains(value))
+				marked.add(value);
+		}
+
+		@Override
+		public void unmark(final ManagedBinding<T> value) {
+			marked.remove(value);
+		}
+
+		@Override
+		public void sweep() {
+			for (final ManagedPoolGCObserver<T> observer : listeners) {
+				observer.onStartSweep(this);
+			}
+
+			for (ManagedBinding<T> item : marked) {
+				release(item);
+			}
+
+			for (final ManagedPoolGCObserver<T> observer : listeners) {
+				observer.onFinishSweep(this);
+			}
 		}
 	}
 }

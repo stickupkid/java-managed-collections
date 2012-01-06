@@ -1,22 +1,22 @@
 package org.osjava.collections.managed;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Test;
-import org.osjava.collections.managed.common.ManagedInteger;
 
 public class ManagedListRemoveBase {
 
-	protected ManagedList<ManagedInteger> list;
+	protected ManagedList<Integer> list;
 
 	@After
 	public void tearDown() {
 		list = null;
 	}
 
-	@Test
-	public void size_is_zero_when_created() {
-		assertNotNull(list.remove(null));
+	@Test(expected = IllegalArgumentException.class)
+	public void removing_null_does_not_return_a_null_list() {
+		ManagedList<Integer> newList = list.remove(null);
+		fail("Failed if reached " + newList);
 	}
 }

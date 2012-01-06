@@ -1,12 +1,12 @@
 package org.osjava.collections.managed.mutable;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedCollection;
-import org.osjava.collections.managed.ManagedIterator;
 import org.osjava.collections.managed.ManagedList;
 import org.osjava.collections.managed.ManagedMap;
 
@@ -76,7 +76,7 @@ public abstract class AbstractManagedMap<K, V> extends AbstractManagedCollection
 	}
 
 	@Override
-	public ManagedIterator<V> iterator() {
+	public Iterator<V> iterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
