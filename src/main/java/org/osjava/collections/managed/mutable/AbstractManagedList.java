@@ -6,31 +6,54 @@ import java.util.List;
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedCollection;
-import org.osjava.collections.managed.ManagedFactory;
 import org.osjava.collections.managed.ManagedIterator;
 import org.osjava.collections.managed.ManagedList;
-import org.osjava.collections.managed.ManagedObject;
 
-public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
-		AbstractManagedCollection<E> implements ManagedList<E> {
+public abstract class AbstractManagedList<T> extends AbstractManagedCollection<T> implements
+		ManagedList<T> {
 
-	private final List<ManagedBinding<E>> _list;
+	private final List<ManagedBinding<T>> _list;
 
-	public AbstractManagedList(ManagedFactory<E> factory, List<ManagedBinding<E>> list) {
-		super(factory);
+	public AbstractManagedList(List<ManagedBinding<T>> list) {
+		super();
 
 		_list = list;
 	}
 
 	@Override
-	public ManagedList<E> add(E value) {
+	public ManagedList<T> add(T value) {
+		if (null == value)
+			throw new IllegalArgumentException("Value can not be null");
+
 		add(value, size());
 		return this;
 	}
 
 	@Override
-	public ManagedList<E> add(ManagedList<E> collection) {
-		final ManagedIterator<E> iterator = collection.iterator();
+	public ManagedList<T> add(T value, int index) {
+		if (null == value)
+			throw new IllegalArgumentException("Value can not be null");
+
+		if (!contains(value)) {
+			final ManagedBinding<T> binding = bindingPool.retain();
+			if (null != binding) {
+				binding.setValue(value);
+
+				_list.add(index, binding);
+				unmark(binding);
+			} else
+				throw new IllegalAccessError("Binding can not be null");
+		}
+
+		return this;
+	}
+
+	@Override
+	public ManagedList<T> add(ManagedList<T> collection) {
+		if (null == collection)
+			throw new IllegalArgumentException("Collection can not be null");
+
+		final ManagedIterator<T> iterator = collection.iterator();
 		while (iterator.hasNext()) {
 			add(iterator.next());
 		}
@@ -38,34 +61,26 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public ManagedList<E> add(E value, int index) {
-		if (!contains(value)) {
-			final ManagedBinding<E> binding = bindingPool.retain();
-			binding.setManagedObject(value);
-
-			_list.add(index, binding);
-			unmark(binding);
-		}
-
-		return this;
-	}
-
-	@Override
-	public Boolean contains(E value) {
+	public Boolean contains(T value) {
 		Boolean result = false;
-		for (final ManagedBinding<E> binding : _list) {
-			if (binding.getManagedObject().equals(value)) {
-				result = true;
-				break;
+		if (null != value) {
+			for (final ManagedBinding<T> binding : _list) {
+				if (binding.getValue().equals(value)) {
+					result = true;
+					break;
+				}
 			}
 		}
 		return result;
 	}
 
 	@Override
-	public ManagedList<E> remove(E value) {
-		for (final ManagedBinding<E> binding : _list) {
-			if (binding.getManagedObject().equals(value)) {
+	public ManagedList<T> remove(T value) {
+		if (null == value)
+			throw new IllegalArgumentException("Value can not be null");
+
+		for (final ManagedBinding<T> binding : _list) {
+			if (binding.getValue().equals(value)) {
 				_list.remove(binding);
 				mark(binding);
 				break;
@@ -75,10 +90,10 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public ManagedList<E> remove(int value) {
-		E managedObject = getAt(value);
-		for (final ManagedBinding<E> binding : _list) {
-			if (binding.getManagedObject().equals(managedObject)) {
+	public ManagedList<T> remove(int value) {
+		T managedObject = getAt(value);
+		for (final ManagedBinding<T> binding : _list) {
+			if (binding.getValue().equals(managedObject)) {
 				_list.remove(binding);
 				mark(binding);
 				break;
@@ -88,37 +103,40 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public E getAt(int index) {
+	public T getAt(int index) {
 		if (index < 0 || index >= size()) {
 			throw new IndexOutOfBoundsException();
 		}
 
-		final ManagedBinding<E> binding = _list.get(index);
-		return binding.getManagedObject();
+		final ManagedBinding<T> binding = _list.get(index);
+		return binding.getValue();
 	}
 
 	@Override
-	public int indexOf(E value) {
+	public int indexOf(T value) {
 		int result = -1;
 
-		final int total = _list.size();
-		for (int i = 0; i < total; i++) {
-			final ManagedBinding<E> binding = _list.get(i);
+		if (null != value) {
+			final int total = _list.size();
+			for (int i = 0; i < total; i++) {
+				final ManagedBinding<T> binding = _list.get(i);
 
-			if (binding.getManagedObject().equals(value)) {
-				result = 1;
-				break;
+				if (binding.getValue().equals(value)) {
+					result = 1;
+					break;
+				}
 			}
 		}
+
 		return result;
 	}
 
 	@Override
-	public ManagedCollection<E> removeAll() {
-		for (ManagedBinding<E> binding : _list) {
-			managedBindingGC.mark(binding);
+	public ManagedCollection<T> removeAll() {
+		for (ManagedBinding<T> binding : _list) {
+			bindingPool.getGC().mark(binding);
 		}
-		managedBindingGC.sweep();
+		bindingPool.getGC().sweep();
 
 		_list.removeAll(_list);
 
@@ -133,11 +151,11 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 
 		boolean result = false;
 		if (value instanceof ManagedList) {
-			ManagedList<E> list = (ManagedList<E>) value;
+			ManagedList<T> list = (ManagedList<T>) value;
 			if (size() == list.size()) {
 				result = true;
-				ManagedIterator<E> iteratorA = iterator();
-				ManagedIterator<E> iteratorB = list.iterator();
+				ManagedIterator<T> iteratorA = iterator();
+				ManagedIterator<T> iteratorB = list.iterator();
 				while (iteratorA.hasNext()) {
 					if (!iteratorA.next().equals(iteratorB.next())) {
 						result = false;
@@ -155,17 +173,17 @@ public abstract class AbstractManagedList<E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public ManagedIterator<E> iterator() {
+	public ManagedIterator<T> iterator() {
 		// TODO : Pool this iterator.
 		return AbstractManagedListIterator.newInstance(_list);
 	}
 
 	@Override
-	public List<E> toList() {
-		final List<E> list = new ArrayList<E>();
-		for (ManagedBinding<E> binding : _list) {
+	public List<T> toList() {
+		final List<T> list = new ArrayList<T>();
+		for (ManagedBinding<T> binding : _list) {
 			if (!binding.isEmpty())
-				list.add(binding.getManagedObject());
+				list.add(binding.getValue());
 		}
 
 		return list;

@@ -1,106 +1,56 @@
 package org.osjava.collections.managed.generic;
 
-import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedCollectionInspector;
-import org.osjava.collections.managed.ManagedFactory;
-import org.osjava.collections.managed.ManagedGC;
-import org.osjava.collections.managed.ManagedGCObserver;
-import org.osjava.collections.managed.ManagedObject;
 import org.osjava.collections.managed.ManagedPool;
+import org.osjava.collections.managed.ManagedPool.ManagedPoolGC;
+import org.osjava.collections.managed.ManagedPool.ManagedPoolGC.ManagedPoolGCObserver;
 
-public class GenericManagedCollectionInspector<E extends ManagedObject<?>> implements
-		ManagedCollectionInspector<E> {
+public class GenericManagedCollectionInspector<T> implements ManagedCollectionInspector {
 
-	private final ManagedPool<E, E, ManagedFactory<E>> _objectPool;
+	private final ManagedPoolGC<T> _gc;
 
-	private final ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> _bindingPool;
+	private final ManagedPool<T> _pool;
 
-	private final ManagedGC<E> _objectGC;
+	private final ManagedPoolGCObserver<T> _gcObserver;
 
-	private final ManagedGC<ManagedBinding<E>> _bindingGC;
+	private boolean _gcSweeping;
 
-	private final ManagedGCObserver<E> _objectGCObserver;
-
-	private final ManagedGCObserver<ManagedBinding<E>> _bindingGCObserver;
-
-	private boolean _objectGCSweeping;
-
-	private boolean _bindingGCSweeping;
-
-	private GenericManagedCollectionInspector(
-			ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool,
-			ManagedGC<ManagedBinding<E>> bindingGC,
-			ManagedPool<E, E, ManagedFactory<E>> objectPool, ManagedGC<E> objectGC) {
+	private GenericManagedCollectionInspector(ManagedPool<T> bindingPool) {
 		if (null == bindingPool)
 			throw new IllegalArgumentException("ManagedBindingPool can not be null");
-		if (null == bindingGC)
-			throw new IllegalArgumentException("ManagedBindingGC can not be null");
-		if (null == objectPool)
-			throw new IllegalArgumentException("ManagedObjectPool can not be null");
-		if (null == objectGC)
-			throw new IllegalArgumentException("ManagedObjectGC can not be null");
 
-		_bindingPool = bindingPool;
-		_bindingGC = bindingGC;
-		_objectPool = objectPool;
-		_objectGC = objectGC;
+		_pool = bindingPool;
 
-		_objectGCSweeping = false;
-		_bindingGCSweeping = false;
+		_gcSweeping = false;
 
-		_objectGCObserver = new GenericObjectGCObserver();
-		_bindingGCObserver = new GenericBindingGCObserver();
+		_gcObserver = new GCObserver();
 
-		_objectGC.addObserver(_objectGCObserver);
-		_bindingGC.addObserver(_bindingGCObserver);
+		_gc = bindingPool.getGC();
+		_gc.addObserver(_gcObserver);
 	}
 
-	public static <E extends ManagedObject<?>> GenericManagedCollectionInspector<E> newInstance(
-			ManagedPool<E, ManagedBinding<E>, ManagedFactory<ManagedBinding<E>>> bindingPool,
-			ManagedGC<ManagedBinding<E>> bindingGC,
-			ManagedPool<E, E, ManagedFactory<E>> objectPool, ManagedGC<E> objectGC) {
-		return new GenericManagedCollectionInspector<E>(bindingPool, bindingGC, objectPool,
-				objectGC);
+	public static <T> GenericManagedCollectionInspector<T> newInstance(ManagedPool<T> bindingPool) {
+		return new GenericManagedCollectionInspector<T>(bindingPool);
 	}
 
 	@Override
-	public int getBindingPoolSize() {
-		return _bindingPool.getSize();
+	public int getPoolSize() {
+		return _pool.getSize();
 	}
 
 	@Override
-	public int getBindingPoolAvailable() {
-		return _bindingPool.getAvailable();
+	public int getPoolAvailable() {
+		return _pool.getAvailable();
 	}
 
 	@Override
-	public int getBindingPoolPriority() {
-		return _bindingPool.getPriority();
+	public int getPoolPriority() {
+		return _pool.getPriority();
 	}
 
 	@Override
-	public boolean isBindingPoolGCSweeping() {
-		return _bindingGCSweeping;
-	}
-
-	@Override
-	public int getObjectPoolSize() {
-		return _objectPool.getSize();
-	}
-
-	@Override
-	public int getObjectPoolAvailable() {
-		return _objectPool.getAvailable();
-	}
-
-	@Override
-	public int getObjectPoolPriority() {
-		return _objectPool.getPriority();
-	}
-
-	@Override
-	public boolean isObjectPoolGCSweeping() {
-		return _objectGCSweeping;
+	public boolean isPoolGCSweeping() {
+		return _gcSweeping;
 	}
 
 	@Override
@@ -110,51 +60,27 @@ public class GenericManagedCollectionInspector<E extends ManagedObject<?>> imple
 		builder.append("ManagedCollectionInspector:\n");
 
 		builder.append("\tManagedBinding (gc=");
-		builder.append(isBindingPoolGCSweeping());
+		builder.append(isPoolGCSweeping());
 		builder.append(")\n\t\tSize: ");
-		builder.append(getBindingPoolSize());
+		builder.append(getPoolSize());
 		builder.append("\n\t\tAvailable: ");
-		builder.append(getBindingPoolAvailable());
+		builder.append(getPoolAvailable());
 		builder.append("\n\t\tPriority: ");
-		builder.append(getBindingPoolPriority());
-
-		builder.append("\n\tManagedObject (gc=");
-		builder.append(isObjectPoolGCSweeping());
-		builder.append(")\n\t\tSize: ");
-		builder.append(getObjectPoolSize());
-		builder.append("\n\t\tAvailable: ");
-		builder.append(getObjectPoolAvailable());
-		builder.append("\n\t\tPriority: ");
-		builder.append(getObjectPoolPriority());
+		builder.append(getPoolPriority());
 
 		return builder.toString();
 	}
 
-	private class GenericBindingGCObserver implements ManagedGCObserver<ManagedBinding<E>> {
+	private class GCObserver implements ManagedPoolGCObserver<T> {
 
 		@Override
-		public void onStartSweep(ManagedGC<ManagedBinding<E>> gc) {
-			_bindingGCSweeping = true;
+		public void onStartSweep(ManagedPoolGC<T> gc) {
+			_gcSweeping = true;
 		}
 
 		@Override
-		public void onFinishSweep(ManagedGC<ManagedBinding<E>> gc) {
-			_bindingGCSweeping = false;
+		public void onFinishSweep(ManagedPoolGC<T> gc) {
+			_gcSweeping = false;
 		}
-
-	}
-
-	private class GenericObjectGCObserver implements ManagedGCObserver<E> {
-
-		@Override
-		public void onStartSweep(ManagedGC<E> gc) {
-			_objectGCSweeping = true;
-		}
-
-		@Override
-		public void onFinishSweep(ManagedGC<E> gc) {
-			_objectGCSweeping = false;
-		}
-
 	}
 }

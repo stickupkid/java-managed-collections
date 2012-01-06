@@ -3,17 +3,14 @@ package org.osjava.collections.managed.mutable;
 import java.util.ArrayList;
 
 import org.osjava.collections.managed.ManagedBinding;
-import org.osjava.collections.managed.ManagedFactory;
-import org.osjava.collections.managed.ManagedObject;
 
-public class ManagedArrayList<E extends ManagedObject<?>> extends AbstractManagedList<E> {
+public class ManagedArrayList<T> extends AbstractManagedList<T> {
 
-	public ManagedArrayList(ManagedFactory<E> factory) {
-		super(factory, new ArrayList<ManagedBinding<E>>());
+	public ManagedArrayList() {
+		super(new ArrayList<ManagedBinding<T>>());
 	}
 
-	public static <E extends ManagedObject<?>> ManagedArrayList<E> newInstance(
-			ManagedFactory<E> factory) {
-		return new ManagedArrayList<E>(factory);
+	public static <T> ManagedArrayList<T> newInstance() {
+		return new ManagedArrayList<T>();
 	}
 }

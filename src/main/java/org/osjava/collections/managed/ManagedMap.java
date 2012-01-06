@@ -1,17 +1,17 @@
 package org.osjava.collections.managed;
 
-public interface ManagedMap<K, E extends ManagedObject<?>> extends ManagedCollection<E> {
+public interface ManagedMap<K, V> extends ManagedCollection<V> {
 
-	public ManagedMap<K, E> put(K key, ManagedObject<?> value);
+	public ManagedMap<K, V> put(K key, V value);
 
-	public ManagedObject<E> getAt(K key);
+	public V getAt(K key);
 
-	public ManagedMap<K, E> remove(K key);
+	public ManagedMap<K, V> remove(K key);
 
-	public Boolean contains(K key);
+	public Boolean containsKey(K key);
 
-	public Boolean contains(ManagedObject<?> value);
+	public Boolean containsValue(V value);
 
-	public ManagedList<E> asList();
+	public ManagedList<V> asList();
 
 }

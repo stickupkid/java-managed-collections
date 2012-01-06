@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedIterator;
-import org.osjava.collections.managed.ManagedObject;
 
-public class AbstractManagedListIterator<T extends ManagedObject<?>> implements ManagedIterator<T> {
+public class AbstractManagedListIterator<T> implements ManagedIterator<T> {
 
 	private final List<ManagedBinding<T>> _list;
 
@@ -20,8 +19,7 @@ public class AbstractManagedListIterator<T extends ManagedObject<?>> implements 
 		_pointer = 0;
 	}
 
-	public static <T extends ManagedObject<?>> AbstractManagedListIterator<T> newInstance(
-			List<ManagedBinding<T>> list) {
+	public static <T> AbstractManagedListIterator<T> newInstance(List<ManagedBinding<T>> list) {
 		return new AbstractManagedListIterator<T>(list);
 	}
 
@@ -30,7 +28,7 @@ public class AbstractManagedListIterator<T extends ManagedObject<?>> implements 
 		T result = null;
 
 		if (_pointer < _list.size())
-			result = _list.get(_pointer).getManagedObject();
+			result = _list.get(_pointer).getValue();
 
 		_pointer++;
 

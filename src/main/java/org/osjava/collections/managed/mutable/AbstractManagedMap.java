@@ -6,61 +6,59 @@ import java.util.Map;
 import org.osjava.collections.managed.AbstractManagedCollection;
 import org.osjava.collections.managed.ManagedBinding;
 import org.osjava.collections.managed.ManagedCollection;
-import org.osjava.collections.managed.ManagedFactory;
 import org.osjava.collections.managed.ManagedIterator;
 import org.osjava.collections.managed.ManagedList;
 import org.osjava.collections.managed.ManagedMap;
-import org.osjava.collections.managed.ManagedObject;
 
-public abstract class AbstractManagedMap<K, E extends ManagedObject<?>> extends
-		AbstractManagedCollection<E> implements ManagedMap<K, E> {
+public abstract class AbstractManagedMap<K, V> extends AbstractManagedCollection<V> implements
+		ManagedMap<K, V> {
 
-	private final Map<K, ManagedBinding<E>> _map;
+	private final Map<K, ManagedBinding<V>> _map;
 
-	public AbstractManagedMap(ManagedFactory<E> factory, Map<K, ManagedBinding<E>> map) {
-		super(factory);
+	public AbstractManagedMap(Map<K, ManagedBinding<V>> map) {
+		super();
 
 		_map = map;
 	}
 
 	@Override
-	public ManagedMap<K, E> put(K key, ManagedObject<?> value) {
+	public ManagedMap<K, V> put(K key, V value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ManagedObject<E> getAt(K key) {
+	public V getAt(K key) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ManagedMap<K, E> remove(K key) {
+	public ManagedMap<K, V> remove(K key) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Boolean contains(K key) {
+	public Boolean containsKey(K key) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Boolean contains(ManagedObject<?> value) {
+	public Boolean containsValue(V value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ManagedList<E> asList() {
+	public ManagedList<V> asList() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ManagedCollection<E> removeAll() {
+	public ManagedCollection<V> removeAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -78,13 +76,13 @@ public abstract class AbstractManagedMap<K, E extends ManagedObject<?>> extends
 	}
 
 	@Override
-	public ManagedIterator<E> iterator() {
+	public ManagedIterator<V> iterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<E> toList() {
+	public List<V> toList() {
 		// TODO Auto-generated method stub
 		return null;
 	}

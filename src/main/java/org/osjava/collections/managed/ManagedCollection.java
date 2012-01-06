@@ -2,23 +2,17 @@ package org.osjava.collections.managed;
 
 import java.util.List;
 
-public interface ManagedCollection<E extends ManagedObject<?>> {
+public interface ManagedCollection<T> {
 
-	public E retrieve();
-
-	public <T> E retrieve(T value) throws IllegalArgumentException;
-
-	public void release(E value);
-
-	public ManagedCollection<E> removeAll();
+	public ManagedCollection<T> removeAll();
 
 	public int size();
 
 	public Boolean isEmpty();
 
-	public ManagedIterator<E> iterator();
+	public ManagedIterator<T> iterator();
 
-	public ManagedCollectionInspector<E> inspector();
+	public ManagedCollectionInspector inspector();
 
-	public List<E> toList();
+	public List<T> toList();
 }

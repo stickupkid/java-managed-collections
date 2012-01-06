@@ -3,16 +3,14 @@ package org.osjava.collections.managed.generic;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.osjava.collections.managed.ManagedCollectionGC;
-import org.osjava.collections.managed.ManagedGC;
+import org.osjava.collections.managed.ManagedPool.ManagedPoolGC;
+import org.osjava.collections.managed.ManagedPool.ManagedPoolGC.ManagedCollectionGC;
 
-public class GenericManagedCollectionGC implements ManagedCollectionGC {
+public class GenericManagedCollectionGC<T> implements ManagedCollectionGC<T> {
 
 	private static final long SWEEP_TIMEOUT = 500000000;
 
-	private final List<ManagedGC<?>> _managedObjectGC = new CopyOnWriteArrayList<ManagedGC<?>>();
-
-	private final List<ManagedGC<?>> _managedBindingGC = new CopyOnWriteArrayList<ManagedGC<?>>();
+	private final List<ManagedPoolGC<T>> _list = new CopyOnWriteArrayList<ManagedPoolGC<T>>();
 
 	private final Thread _thread;
 
@@ -32,11 +30,7 @@ public class GenericManagedCollectionGC implements ManagedCollectionGC {
 				while (_active) {
 					if (System.nanoTime() - _nanoTime > SWEEP_TIMEOUT) {
 
-						for (ManagedGC<?> gc : _managedBindingGC) {
-							gc.sweep();
-						}
-
-						for (ManagedGC<?> gc : _managedObjectGC) {
+						for (final ManagedPoolGC<T> gc : _list) {
 							gc.sweep();
 						}
 
@@ -48,31 +42,12 @@ public class GenericManagedCollectionGC implements ManagedCollectionGC {
 		_thread.start();
 	}
 
-	public static GenericManagedCollectionGC newInstance() {
-		return new GenericManagedCollectionGC();
+	public static <T> GenericManagedCollectionGC<T> newInstance() {
+		return new GenericManagedCollectionGC<T>();
 	}
 
 	@Override
-	public synchronized <E> void addManagedObjectGC(ManagedGC<E> gc) {
-		if (_managedObjectGC.indexOf(gc) < 0) {
-			_managedObjectGC.add(gc);
-		}
-	}
-
-	@Override
-	public <E> void removeManagedObjectGC(ManagedGC<E> gc) {
-		_managedObjectGC.remove(gc);
-	}
-
-	@Override
-	public synchronized <B> void addManagedBindingGC(ManagedGC<B> gc) {
-		if (_managedBindingGC.indexOf(gc) < 0) {
-			_managedBindingGC.add(gc);
-		}
-	}
-
-	@Override
-	public <B> void removeManagedBindingGC(ManagedGC<B> gc) {
-		_managedBindingGC.remove(gc);
+	public void add(ManagedPoolGC<T> bindingGC) {
+		_list.add(bindingGC);
 	}
 }

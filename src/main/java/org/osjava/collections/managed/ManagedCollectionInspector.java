@@ -1,21 +1,13 @@
 package org.osjava.collections.managed;
 
-public interface ManagedCollectionInspector<E extends ManagedObject<?>> {
+public interface ManagedCollectionInspector {
 
-	public int getBindingPoolSize();
+	public int getPoolSize();
 
-	public int getBindingPoolAvailable();
+	public int getPoolAvailable();
 
-	public int getBindingPoolPriority();
+	public int getPoolPriority();
 
-	public boolean isBindingPoolGCSweeping();
-
-	public int getObjectPoolSize();
-
-	public int getObjectPoolAvailable();
-
-	public int getObjectPoolPriority();
-
-	public boolean isObjectPoolGCSweeping();
+	public boolean isPoolGCSweeping();
 
 }

@@ -1,10 +1,12 @@
 package org.osjava.collections.managed;
 
-public interface ManagedBinding<E extends ManagedObject<?>> extends ManagedPoolItem<E> {
+public interface ManagedBinding<T> {
 
 	public Boolean isEmpty();
 
-	public E getManagedObject();
+	public ManagedCollection<T> getCollection();
 
-	public void setManagedObject(E value);
+	public T getValue();
+
+	public void setValue(T value);
 }

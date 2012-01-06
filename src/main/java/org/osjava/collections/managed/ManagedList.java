@@ -1,20 +1,20 @@
 package org.osjava.collections.managed;
 
-public interface ManagedList<E extends ManagedObject<?>> extends ManagedCollection<E> {
+public interface ManagedList<T> extends ManagedCollection<T> {
 
-	public ManagedList<E> add(E value);
+	public ManagedList<T> add(T value);
 
-	public ManagedList<E> add(ManagedList<E> collection);
+	public ManagedList<T> add(T value, int index);
 
-	public ManagedList<E> add(E value, int index);
+	public ManagedList<T> add(ManagedList<T> collection);
 
-	public Boolean contains(E value);
+	public Boolean contains(T value);
 
-	public ManagedList<E> remove(E value);
+	public ManagedList<T> remove(T value);
 
-	public ManagedList<E> remove(int index);
+	public ManagedList<T> remove(int index);
 
-	public ManagedObject<?> getAt(int index);
+	public T getAt(int index);
 
-	public int indexOf(E value);
+	public int indexOf(T value);
 }
