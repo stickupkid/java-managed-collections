@@ -50,7 +50,7 @@ public final class GenericManagedBindingFactory<T> implements ManagedFactory<T> 
 			boolean result = false;
 			if (obj instanceof GenericManagedBindingFactory.GenericManagedBinding) {
 				final GenericManagedBinding managed = (GenericManagedBinding) obj;
-				if (managed._uuid == _uuid && managed.hashCode() == obj.hashCode()) {
+				if (_uuid == managed._uuid && hashCode() == managed.hashCode()) {
 					result = true;
 				}
 			}
@@ -75,6 +75,11 @@ public final class GenericManagedBindingFactory<T> implements ManagedFactory<T> 
 		@Override
 		public void setValue(T value) {
 			_value = value;
+		}
+
+		@Override
+		public String toString() {
+			return "Binding {" + hashCode() + "}";
 		}
 	}
 }

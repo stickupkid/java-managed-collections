@@ -2,6 +2,7 @@ package org.osjava.collections.managed.generic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.osjava.collections.managed.AbstractManagedPool;
 import org.osjava.collections.managed.ManagedBinding;
@@ -36,44 +37,53 @@ public final class GenericManagedBindingPool<T> extends AbstractManagedPool<T> {
 	}
 
 	@Override
-	public ManagedBinding<T> retain() {
+	public synchronized ManagedBinding<T> retain() {
 		ManagedBinding<T> item = null;
 
 		if (getAvailable() < 1)
 			allocate();
 
+		if (getAvailable() < 1)
+			throw new IllegalStateException("Available can not be less than 1");
+
 		final int index = _available.size() - 1;
-		if (index >= 0) {
-			item = _available.remove(index);
-		}
+		item = _available.remove(index);
 
-		if (null != item) {
-			if (!_utilised.contains(item)) {
-				_utilised.add(item);
+		if (!_utilised.contains(item)) {
+			_utilised.add(item);
+		} else
+			throw new IllegalAccessError("Item is already in use");
 
-				priority++;
-				if (priority >= 100)
-					priority = 100;
-			} else
-				throw new IllegalAccessError("Item is already in use");
-		}
+		priority++;
+		if (priority >= 100)
+			priority = 100;
 
 		return item;
 	}
 
 	@Override
-	public void release(final ManagedBinding<T> value) {
+	public synchronized void release(final ManagedBinding<T> value) {
 		if (null == value)
 			throw new IllegalArgumentException("Value can not be null");
 
 		if (value.getCollection().equals(_collection)) {
-
-			if (!_utilised.contains(value)) {
+			if (_utilised.contains(value)) {
 				_utilised.remove(value);
 				_available.add(value);
-			} else
-				throw new IllegalAccessError("Item has already been released");
+			} else {
 
+				synchronized (_utilised) {
+					StringBuilder builder = new StringBuilder();
+					builder.append("--> RELEASE ");
+					builder.append(value);
+					builder.append(" : ");
+					builder.append(_utilised);
+
+					System.out.println(builder);
+				}
+
+				throw new NoSuchElementException();
+			}
 		} else
 			throw new IllegalAccessError("Released item collection is not valid");
 	}
@@ -149,8 +159,8 @@ public final class GenericManagedBindingPool<T> extends AbstractManagedPool<T> {
 				observer.onStartSweep(this);
 			}
 
-			for (ManagedBinding<T> item : marked) {
-				release(item);
+			for (int i = marked.size() - 1; i >= 0; i--) {
+				release(marked.remove(i));
 			}
 
 			for (final ManagedPoolGCObserver<T> observer : listeners) {
